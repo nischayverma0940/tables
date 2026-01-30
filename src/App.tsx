@@ -1,7 +1,8 @@
 import './App.css';
-import { useState } from "react";
-import { TabularData } from './components/TabularData';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./components/ui/accordion";
+import { useState } from 'react';
+import { ViewOnly } from './view/ViewOnly.tsx';
+import { EditOnly } from './edit/EditOnly.tsx';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const snapshots = [
   {
@@ -36,7 +37,7 @@ const snapshots = [
       {
         priority: 3,
         code: "36",
-        tableName: "Grant-in-Aid Salary",
+        tableName: "Grant-in-aid Salary",
         data: [
           { code: "36.01", title: "Expenditure on salary on Regular Faculty", col1: 68000, col2: 2280000, col3: 79500000 },
           { code: "36.02", title: "Expenditure on salary on Regular Non-Faculty", col1: 54000, col2: 1690000, col3: 48500000 },
@@ -82,7 +83,7 @@ const snapshots = [
       {
         priority: 3,
         code: "36",
-        tableName: "Grant-in-Aid Salary",
+        tableName: "Grant-in-aid Salary",
         data: [
           { code: "36.01", title: "Expenditure on salary on Regular Faculty", col1: 68000, col2: 2280000, col3: 79500000 },
           { code: "36.02", title: "Expenditure on salary on Regular Non-Faculty", col1: 54000, col2: 1690000, col3: 48500000 },
@@ -128,7 +129,7 @@ const snapshots = [
       {
         priority: 3,
         code: "36",
-        tableName: "Grant-in-Aid Salary",
+        tableName: "Grant-in-aid Salary",
         data: [
           { code: "36.01", title: "Expenditure on salary on Regular Faculty", col1: 68000, col2: 2280000, col3: 79500000 },
           { code: "36.02", title: "Expenditure on salary on Regular Non-Faculty", col1: 54000, col2: 1690000, col3: 48500000 },
@@ -146,40 +147,31 @@ const snapshots = [
 
 function App() {
   const latestSnapshot = snapshots.reduce((latest, snapshot) =>
-    snapshot.lastUpdated > latest.lastUpdated ? snapshot : latest,
-    snapshots[0]
-  );
+        snapshot.lastUpdated > latest.lastUpdated ? snapshot : latest,
+        snapshots[0]
+    );
 
   const [selectedSnapshot] = useState(latestSnapshot);
 
-  return (
+  return (      
     <main className="px-16 py-8">
       <div className="flex flex-col items-center space-y-4">
       <div className="text-center">
-        <h1 className="text-6xl font-bold">Title</h1>
-        <h2 className="text-2xl font-bold">Subtitle</h2>
+          <h1 className="text-6xl font-bold">Title</h1>
+          <h2 className="text-2xl font-bold">Subtitle</h2>
       </div>
       <h3 className="text-gray-700">
-        Last Updated: { selectedSnapshot.lastUpdated.toLocaleString() }
+          Last Updated: { selectedSnapshot.lastUpdated.toLocaleString() }
       </h3>
       </div>
-
-      <Accordion type="single" collapsible>
-        {selectedSnapshot.tables
-          .sort((a, b) => a.priority - b.priority)
-          .map((table, index) => (
-            <AccordionItem key={index} value={`item-${index}`}>
-              <AccordionTrigger>
-                {table.code} - {table.tableName}
-              </AccordionTrigger>
-              <AccordionContent>
-                <TabularData data={table.data} />
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-      </Accordion>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ViewOnly snapshot={ selectedSnapshot } />} />
+          <Route path="/edit" element={<EditOnly snapshot={ selectedSnapshot } />} />
+        </Routes>
+      </BrowserRouter>
     </main>
-  );
+  )
 }
 
 export default App;
